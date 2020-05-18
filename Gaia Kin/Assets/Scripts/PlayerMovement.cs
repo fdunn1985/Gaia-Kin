@@ -8,8 +8,23 @@ public class PlayerMovement : MonoBehaviour {
 	private Rigidbody2D myBody;
 	private float maxVelocity = 2.0f;
 
+	//Screen limits
+	private float minX, minY, maxX, maxY;
+	private float bgWidth, bgHeight, playerWidth, playerHeight;
+
 	void Awake() {
 		myBody = GetComponent<Rigidbody2D>();
+
+		GameObject bg = GameObject.Find("BasicGround2");
+		bgWidth = bg.GetComponent<SpriteRenderer>().bounds.size.x;
+		bgHeight = bg.GetComponent<SpriteRenderer>().bounds.size.y;
+		playerWidth = this.GetComponent<SpriteRenderer>().bounds.size.x;
+		playerHeight = this.GetComponent<SpriteRenderer>().bounds.size.x;
+
+		maxX = bgWidth / 2 - playerWidth / 2;
+		minX = -maxX;
+		maxY = bgHeight / 2 - playerHeight / 2;
+		minY = -maxY;
 	}
 
 	// Use this for initialization
@@ -35,9 +50,11 @@ public class PlayerMovement : MonoBehaviour {
 				forceY = speed;
 			}
 
-			temp = transform.position;
-			temp.y += forceY;
-			transform.position = temp;
+			if ((transform.position.y) + forceY <= maxY) { 
+				temp = transform.position;
+				temp.y += forceY;
+				transform.position = temp;
+			}
 			//myBody.AddForce(new Vector2(0, forceY));
 		}
 
@@ -50,9 +67,11 @@ public class PlayerMovement : MonoBehaviour {
 				forceY = -speed;
 			}
 
-			temp = transform.position;
-			temp.y += forceY;
-			transform.position = temp;
+			if ((transform.position.y + forceY) >= minY) {
+				temp = transform.position;
+				temp.y += forceY;
+				transform.position = temp;
+			}
 		}
 
 		if (Input.GetKey("a")) {
@@ -67,9 +86,11 @@ public class PlayerMovement : MonoBehaviour {
 				forceX = -speed;
 			}
 
-			temp = transform.position;
-			temp.x += forceX;
-			transform.position = temp;
+			if ((transform.position.x + forceX) >= minX) { 
+				temp = transform.position;
+				temp.x += forceX;
+				transform.position = temp;
+			}
 		}
 
 		if (Input.GetKey("d")) {
@@ -84,9 +105,11 @@ public class PlayerMovement : MonoBehaviour {
 				forceX = speed;
 			}
 
-			temp = transform.position;
-			temp.x += forceX;
-			transform.position = temp;
+			if ((transform.position.x + forceX) <= maxX) {
+				temp = transform.position;
+				temp.x += forceX;
+				transform.position = temp;
+			}
 		}
 	}
 }

@@ -8,11 +8,18 @@ public class BulletScript : MonoBehaviour
     public float attackSpeed = 0.5f;
     public float coolDown;
     public float projectileSpeed = 500;
+    private Rigidbody2D[] bulletArr;
+    private int counter = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        bulletArr = new Rigidbody2D[20];
+        for (int i=0; i < bulletArr.Length; i++) {
+            bulletArr[i] = Instantiate(bulletPrefab, transform.position, transform.rotation) as Rigidbody2D;
+            bulletArr[i].GetComponent<Renderer>().enabled = false;
+        }
+
     }
 
     // Update is called once per frame
@@ -24,17 +31,34 @@ public class BulletScript : MonoBehaviour
     }
 
     void Shoot() {
-        Rigidbody2D bullet = Instantiate(bulletPrefab, transform.position, transform.rotation) as Rigidbody2D;
+        bulletArr[counter].GetComponent<Renderer>().enabled = true;
+        //print("Set " + counter + " to visible");
+
+        Vector3 tempPos = transform.position;
         if (transform.localScale.x > 0) {
-            bullet.velocity = transform.right * projectileSpeed;
+            Vector3 temp = bulletArr[counter].transform.localScale;
+            temp.x = Mathf.Abs(temp.x);
+            bulletArr[counter].transform.localScale = temp;
+
+            tempPos.x = tempPos.x + GetComponent<SpriteRenderer>().bounds.size.x;
+            bulletArr[counter].transform.position = tempPos;
+            bulletArr[counter].velocity = transform.right * projectileSpeed;
         }
         else {
-            Vector3 temp = bullet.transform.localScale;
+            tempPos.x = tempPos.x - GetComponent<SpriteRenderer>().bounds.size.x;
+            bulletArr[counter].transform.position = tempPos;
+
+            Vector3 temp = bulletArr[counter].transform.localScale;
             temp.x = -Mathf.Abs(temp.x);
-            bullet.transform.localScale = temp;
-            bullet.velocity = -transform.right * projectileSpeed;
+            bulletArr[counter].transform.localScale = temp;
+            bulletArr[counter].velocity = -transform.right * projectileSpeed;
         }
 
+        counter++;
+        if (counter >= bulletArr.Length) {
+            counter = 0;
+            //print("Setting Counter to 0");
+        }
         coolDown = Time.time + attackSpeed;
     }
 }
